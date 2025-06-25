@@ -46,6 +46,9 @@ Jeśli faktura ma więcej stron to od razu to widać na ikonie/w powiekszeniu, w
 
 To rozwiązanie pierwotnie miało służyć dla przechowywania szyfrowanych danych w jednoplikowym kontenerze oraz do przetwarzania danych z archiwów CCTV np. mp4-to-text, gdzie zawartość pliku z metadanymi  ograniczała by się do raportu, scenariusza zdarzeń, z linkowaniem do źródła w archiwum
 
+a co gdybyśmy użyli jednego pliku jako projektu z wieloma LLM-ami?
+Na początku tworzymy plik do którego kolejno dodajemy różne odpowiedzi z różnych źródeł?
+rozwizałem problem metadanych porpzez użycie jednego pliku SVG jako kontenera, a że działa on jak html to można go otworzyć w przeglądarce i używać jako aplikacji, np dopisywać dane ...
 
 
 # [docs.docutemp.com](http://docs.docutemp.com)
