@@ -1,0 +1,18 @@
+Content-Type: multipart/related; boundary="boundary123"
+
+--boundary123
+Content-Type: text/html; charset="utf-8"
+
+<html>
+<img src="cid:image1">
+<!-- Twój HTML -->
+</html>
+
+--boundary123
+Content-Type: image/jpeg
+Content-ID: <image1>
+Content-Transfer-Encoding: base64
+
+/9j/4AAQSkZJRgABAQEAYABgAAD...
+
+--boundary123--

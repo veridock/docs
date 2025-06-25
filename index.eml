@@ -1,0 +1,19 @@
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="hybrid-boundary"
+
+--hybrid-boundary
+Content-Type: message/rfc822
+Content-Disposition: attachment; filename="original.eml"
+
+[ORYGINALNA WIADOMOŚĆ EML]
+
+--hybrid-boundary
+Content-Type: text/html; charset="utf-8"
+Content-Disposition: inline; filename="viewer.html"
+
+<!DOCTYPE html>
+<html>
+<!-- Twój HTML viewer -->
+</html>
+
+--hybrid-boundary--

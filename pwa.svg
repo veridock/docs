@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xhtml="http://www.w3.org/1999/xhtml"
+     width="400" height="600" viewBox="0 0 400 600">
+  
+  <!-- PWA Manifest data (embedded as metadata) -->
+  <metadata>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about="">
+        <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Kalkulator SVG PWA</dc:title>
+        <dc:description xmlns:dc="http://purl.org/dc/elements/1.1/">Prosty kalkulator w formacie SVG działający jako PWA</dc:description>
+      </rdf:Description>
+    </rdf:RDF>
+  </metadata>
+  
+  <!-- Tło aplikacji -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="displayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d3748;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a5568;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.3)"/>
+    </filter>
+  </defs>
+  
+  <!-- Główne tło -->
+  <rect width="400" height="600" fill="url(#bgGradient)"/>
+  
+  <!-- Nagłówek aplikacji -->
+  <rect x="20" y="20" width="360" height="60" rx="15" fill="rgba(255,255,255,0.1)" filter="url(#shadow)"/>
+  <text x="200" y="45" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">
+    📱 Kalkulator SVG PWA
+  </text>
+  <text x="200" y="65" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="12">
+    Działający offline • Instalowalny
+  </text>
+  
+  <!-- Wyświetlacz kalkulatora -->
+  <rect x="30" y="100" width="340" height="80" rx="10" fill="url(#displayGradient)" filter="url(#shadow)"/>
+  <text id="display" x="360" y="150" text-anchor="end" fill="#00ff88" font-family="Monaco, monospace" font-size="32" font-weight="bold">0</text>
+  
+  <!-- Przyciski kalkulatora -->
+  <!-- Rząd 1: Clear, +/-, %, ÷ -->
+  <g class="button-row">
+    <rect class="btn btn-clear" x="30" y="200" width="70" height="70" rx="35" fill="#ff6b6b" filter="url(#shadow)" onclick="calculator.clear()"/>
+    <text x="65" y="245" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">C</text>
+    
+    <rect class="btn btn-operator" x="115" y="200" width="70" height="70" rx="35" fill="#4ecdc4" filter="url(#shadow)" onclick="calculator.toggleSign()"/>
+    <text x="150" y="245" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">±</text>
+    
+    <rect class="btn btn-operator" x="200" y="200" width="70" height="70" rx="35" fill="#4ecdc4" filter="url(#shadow)" onclick="calculator.percent()"/>
+    <text x="235" y="245" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">%</text>
+    
+    <rect class="btn btn-operator" x="285" y="200" width="70" height="70" rx="35" fill="#45b7d1" filter="url(#shadow)" onclick="calculator.setOperation('/')"/>
+    <text x="320" y="245" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">÷</text>
+  </g>
+  
+  <!-- Rząd 2: 7, 8, 9, × -->
+  <g class="button-row">
+    <rect class="btn btn-number" x="30" y="285" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('7')"/>
+    <text x="65" y="330" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">7</text>
+    
+    <rect class="btn btn-number" x="115" y="285" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('8')"/>
+    <text x="150" y="330" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">8</text>
+    
+    <rect class="btn btn-number" x="200" y="285" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('9')"/>
+    <text x="235" y="330" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">9</text>
+    
+    <rect class="btn btn-operator" x="285" y="285" width="70" height="70" rx="35" fill="#45b7d1" filter="url(#shadow)" onclick="calculator.setOperation('*')"/>
+    <text x="320" y="330" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">×</text>
+  </g>
+  
+  <!-- Rząd 3: 4, 5, 6, - -->
+  <g class="button-row">
+    <rect class="btn btn-number" x="30" y="370" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('4')"/>
+    <text x="65" y="415" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">4</text>
+    
+    <rect class="btn btn-number" x="115" y="370" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('5')"/>
+    <text x="150" y="415" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">5</text>
+    
+    <rect class="btn btn-number" x="200" y="370" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('6')"/>
+    <text x="235" y="415" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">6</text>
+    
+    <rect class="btn btn-operator" x="285" y="370" width="70" height="70" rx="35" fill="#45b7d1" filter="url(#shadow)" onclick="calculator.setOperation('-')"/>
+    <text x="320" y="415" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">-</text>
+  </g>
+  
+  <!-- Rząd 4: 1, 2, 3, + -->
+  <g class="button-row">
+    <rect class="btn btn-number" x="30" y="455" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('1')"/>
+    <text x="65" y="500" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">1</text>
+    
+    <rect class="btn btn-number" x="115" y="455" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('2')"/>
+    <text x="150" y="500" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">2</text>
+    
+    <rect class="btn btn-number" x="200" y="455" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('3')"/>
+    <text x="235" y="500" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">3</text>
+    
+    <rect class="btn btn-operator" x="285" y="455" width="70" height="70" rx="35" fill="#45b7d1" filter="url(#shadow)" onclick="calculator.setOperation('+')"/>
+    <text x="320" y="500" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">+</text>
+  </g>
+  
+  <!-- Rząd 5: 0, ., = -->
+  <g class="button-row">
+    <rect class="btn btn-number" x="30" y="540" width="155" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputNumber('0')"/>
+    <text x="107" y="585" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">0</text>
+    
+    <rect class="btn btn-number" x="200" y="540" width="70" height="70" rx="35" fill="rgba(255,255,255,0.9)" filter="url(#shadow)" onclick="calculator.inputDecimal()"/>
+    <text x="235" y="585" text-anchor="middle" fill="#2d3748" font-family="Arial, sans-serif" font-size="18" font-weight="bold">.</text>
+    
+    <rect class="btn btn-equals" x="285" y="540" width="70" height="70" rx="35" fill="#50fa7b" filter="url(#shadow)" onclick="calculator.calculate()"/>
+    <text x="320" y="585" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">=</text>
+  </g>
+  
+  <!-- Efekty hover -->
+  <style>
+    .btn {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      filter: brightness(1.1) url(#shadow);
+      transform: scale(1.05);
+    }
+    .btn:active {
+      transform: scale(0.95);
+    }
+  </style>
+  
+  <!-- JavaScript - logika kalkulatora -->
+  <script><![CDATA[
+    class Calculator {
+      constructor() {
+        this.display = document.getElementById('display');
+        this.currentValue = '0';
+        this.previousValue = null;
+        this.operation = null;
+        this.waitingForNewValue = false;
+        
+        // Obsługa klawiatury
+        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+        
+        // PWA features
+        this.initPWA();
+        
+        console.log('📱 Kalkulator SVG PWA załadowany');
+      }
+      
+      updateDisplay() {
+        // Formatuj liczbę
+        let displayValue = this.currentValue;
+        if (displayValue.length > 12) {
+          displayValue = parseFloat(displayValue).toExponential(6);
+        }
+        this.display.textContent = displayValue;
+      }
+      
+      inputNumber(num) {
+        if (this.waitingForNewValue) {
+          this.currentValue = num;
+          this.waitingForNewValue = false;
+        } else {
+          this.currentValue = this.currentValue === '0' ? num : this.currentValue + num;
+        }
+        this.updateDisplay();
+      }
+      
+      inputDecimal() {
+        if (this.waitingForNewValue) {
+          this.currentValue = '0.';
+          this.waitingForNewValue = false;
+        } else if (this.currentValue.indexOf('.') === -1) {
+          this.currentValue += '.';
+        }
+        this.updateDisplay();
+      }
+      
+      clear() {
+        this.currentValue = '0';
+        this.previousValue = null;
+        this.operation = null;
+        this.waitingForNewValue = false;
+        this.updateDisplay();
+      }
+      
+      setOperation(op) {
+        if (this.previousValue === null) {
+          this.previousValue = this.currentValue;
+        } else if (this.operation) {
+          this.calculate();
+          this.previousValue = this.currentValue;
+        }
+        
+        this.operation = op;
+        this.waitingForNewValue = true;
+      }
+      
+      calculate() {
+        if (this.operation && this.previousValue !== null) {
+          const prev = parseFloat(this.previousValue);
+          const current = parseFloat(this.currentValue);
+          let result = 0;
+          
+          switch (this.operation) {
+            case '+':
+              result = prev + current;
+              break;
+            case '-':
+              result = prev - current;
+              break;
+            case '*':
+              result = prev * current;
+              break;
+            case '/':
+              result = current !== 0 ? prev / current : 0;
+              break;
+          }
+          
+          this.currentValue = result.toString();
+          this.previousValue = null;
+          this.operation = null;
+          this.waitingForNewValue = true;
+          this.updateDisplay();
+        }
+      }
+      
+      toggleSign() {
+        this.currentValue = (parseFloat(this.currentValue) * -1).toString();
+        this.updateDisplay();
+      }
+      
+      percent() {
+        this.currentValue = (parseFloat(this.currentValue) / 100).toString();
+        this.updateDisplay();
+      }
+      
+      handleKeyboard(e) {
+        e.preventDefault();
+        
+        if (e.key >= '0' && e.key <= '9') {
+          this.inputNumber(e.key);
+        } else if (e.key === '.') {
+          this.inputDecimal();
+        } else if (e.key === '+') {
+          this.setOperation('+');
+        } else if (e.key === '-') {
+          this.setOperation('-');
+        } else if (e.key === '*') {
+          this.setOperation('*');
+        } else if (e.key === '/') {
+          this.setOperation('/');
+        } else if (e.key === 'Enter' || e.key === '=') {
+          this.calculate();
+        } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+          this.clear();
+        }
+      }
+      
+      initPWA() {
+        // Symulacja service worker dla SVG
+        if ('serviceWorker' in navigator) {
+          // W prawdziwej aplikacji tutaj byłaby rejestracja service worker
+          console.log('🔧 PWA features available');
+        }
+        
+        // Sprawdzenie czy można zainstalować
+        window.addEventListener('beforeinstallprompt', (e) => {
+          console.log('📲 App can be installed');
+          e.preventDefault();
+          // Możliwość pokazania prompt install
+        });
+        
+        // Historia działań dla offline
+        this.history = JSON.parse(localStorage.getItem('calc-history') || '[]');
+      }
+      
+      saveToHistory(operation) {
+        this.history.push({
+          operation: operation,
+          result: this.currentValue,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Zachowaj tylko ostatnie 10 operacji
+        if (this.history.length > 10) {
+          this.history = this.history.slice(-10);
+        }
+        
+        localStorage.setItem('calc-history', JSON.stringify(this.history));
+      }
+    }
+    
+    // Inicjalizacja
+    const calculator = new Calculator();
+    
+    // Manifest PWA (embedded)
+    const pwaManifest = {
+      "name": "Kalkulator SVG PWA",
+      "short_name": "CalcSVG",
+      "description": "Prosty kalkulator w formacie SVG",
+      "start_url": ".",
+      "display": "standalone",
+      "background_color": "#667eea",
+      "theme_color": "#764ba2",
+      "orientation": "portrait",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjNjY3ZWVhIi8+Cjx0ZXh0IHg9Ijk2IiB5PSIxMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNjAiPvCfk7E8L3RleHQ+Cjwvc3ZnPgo=",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    };
+    
+    console.log('📱 PWA Manifest:', pwaManifest);
+  ]]></script>
+</svg>

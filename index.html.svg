@@ -1,0 +1,999 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg height="100" width="100" xmlns="http://www.w3.org/2000/svg">
+  <circle r="45" cx="50" cy="50" stroke="green" stroke-width="3" fill="red" opacity="0.5" />
+</svg>
+
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator HTML z Embedded Data URI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 48px 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #ebf8ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #a0aec0;
+            margin-bottom: 16px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-text {
+            color: #4a5568;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .file-list {
+            margin: 24px 0;
+        }
+
+        .file-item {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .file-icon.pdf { background: #e53e3e; }
+        .file-icon.eml { background: #3182ce; }
+        .file-icon.jpg, .file-icon.jpeg, .file-icon.png { background: #38a169; }
+        .file-icon.default { background: #718096; }
+
+        .file-details h4 {
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .file-details p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn {
+            background: #fed7d7;
+            color: #c53030;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: #feb2b2;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .generate-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .options {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .options h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+        }
+
+        .option-group {
+            margin-bottom: 16px;
+        }
+
+        .option-group label {
+            display: block;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .option-group input, .option-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .progress {
+            background: #e2e8f0;
+            border-radius: 8px;
+            height: 8px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            color: #4a5568;
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗃️ Generator HTML z Embedded Data</h1>
+        <p class="subtitle">Twórz samodzielne pliki HTML zawierające oryginalne dane w base64</p>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Przeciągnij pliki tutaj lub kliknij aby wybrać</div>
+            <div class="upload-hint">Obsługiwane: PDF, EML, JPG, PNG, JPEG</div>
+            <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.eml,.jpg,.jpeg,.png">
+        </div>
+
+        <div class="options">
+            <h3>⚙️ Opcje generowania</h3>
+            
+            <div class="option-group">
+                <label for="titleInput">Tytuł strony:</label>
+                <input type="text" id="titleInput" placeholder="Moje embedded pliki" value="Embedded Files Viewer">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="generateThumbnails" checked>
+                <label for="generateThumbnails">Generuj miniaturki dla obrazów</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="includeMetadata" checked>
+                <label for="includeMetadata">Dołącz metadane plików</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="enableDownload" checked>
+                <label for="enableDownload">Umożliw pobieranie oryginalnych plików</label>
+            </div>
+
+            <div class="option-group">
+                <label for="layoutSelect">Układ galerii:</label>
+                <select id="layoutSelect">
+                    <option value="grid">Siatka</option>
+                    <option value="list">Lista</option>
+                    <option value="carousel">Karuzela</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="status" id="status"></div>
+
+        <button class="generate-btn" id="generateBtn" disabled>
+            🚀 Generuj HTML z Embedded Data
+        </button>
+    </div>
+
+    <script>
+        class FileEmbedder {
+            constructor() {
+                this.files = [];
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+                const generateBtn = document.getElementById('generateBtn');
+
+                // Drag & Drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    this.handleFiles(e.dataTransfer.files);
+                });
+
+                uploadArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    this.handleFiles(e.target.files);
+                });
+
+                generateBtn.addEventListener('click', () => {
+                    this.generateHTML();
+                });
+            }
+
+            handleFiles(fileList) {
+                Array.from(fileList).forEach(file => {
+                    if (this.isValidFile(file)) {
+                        this.addFile(file);
+                    }
+                });
+                this.updateUI();
+            }
+
+            isValidFile(file) {
+                const validTypes = ['application/pdf', 'message/rfc822', 'image/jpeg', 'image/png', 'image/jpg'];
+                const validExtensions = ['.pdf', '.eml', '.jpg', '.jpeg', '.png'];
+                
+                return validTypes.includes(file.type) || 
+                       validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+            }
+
+            addFile(file) {
+                const fileObj = {
+                    id: Date.now() + Math.random(),
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type || this.getTypeFromExtension(file.name),
+                    lastModified: file.lastModified || Date.now()
+                };
+                
+                this.files.push(fileObj);
+            }
+
+            getTypeFromExtension(filename) {
+                const ext = filename.toLowerCase().split('.').pop();
+                const types = {
+                    'pdf': 'application/pdf',
+                    'eml': 'message/rfc822',
+                    'jpg': 'image/jpeg',
+                    'jpeg': 'image/jpeg',
+                    'png': 'image/png'
+                };
+                return types[ext] || 'application/octet-stream';
+            }
+
+            removeFile(id) {
+                this.files = this.files.filter(f => f.id !== id);
+                this.updateUI();
+            }
+
+            updateUI() {
+                this.renderFileList();
+                document.getElementById('generateBtn').disabled = this.files.length === 0;
+            }
+
+            renderFileList() {
+                const fileList = document.getElementById('fileList');
+                
+                if (this.files.length === 0) {
+                    fileList.innerHTML = '';
+                    return;
+                }
+
+                fileList.innerHTML = this.files.map(fileObj => {
+                    const ext = this.getFileExtension(fileObj.name);
+                    return `
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-icon ${ext}">
+                                    ${ext.toUpperCase()}
+                                </div>
+                                <div class="file-details">
+                                    <h4>${fileObj.name}</h4>
+                                    <p>${this.formatFileSize(fileObj.size)} • ${new Date(fileObj.lastModified).toLocaleDateString('pl-PL')}</p>
+                                </div>
+                            </div>
+                            <button class="remove-btn" onclick="embedder.removeFile(${fileObj.id})">
+                                Usuń
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            getFileExtension(filename) {
+                return filename.toLowerCase().split('.').pop();
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            async generateHTML() {
+                const progressContainer = document.getElementById('progressContainer');
+                const progressBar = document.getElementById('progressBar');
+                const status = document.getElementById('status');
+                const generateBtn = document.getElementById('generateBtn');
+
+                progressContainer.style.display = 'block';
+                generateBtn.disabled = true;
+                
+                try {
+                    const embeddedFiles = [];
+                    
+                    for (let i = 0; i < this.files.length; i++) {
+                        const fileObj = this.files[i];
+                        const progress = ((i + 1) / this.files.length) * 100;
+                        
+                        progressBar.style.width = progress + '%';
+                        status.textContent = 'Przetwarzanie: ' + fileObj.name + '...';
+                        
+                        const base64Data = await this.fileToBase64(fileObj.file);
+                        const thumbnail = await this.generateThumbnail(fileObj);
+                        
+                        embeddedFiles.push({
+                            id: i,
+                            name: fileObj.name,
+                            type: fileObj.type,
+                            size: fileObj.size,
+                            lastModified: fileObj.lastModified,
+                            data: base64Data,
+                            thumbnail: thumbnail
+                        });
+                    }
+
+                    this.createAndDownloadHTML(embeddedFiles);
+                    
+                    status.textContent = 'Gotowe! Plik HTML został wygenerowany.';
+                    
+                } catch (error) {
+                    status.textContent = 'Błąd podczas generowania: ' + error.message;
+                } finally {
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        generateBtn.disabled = false;
+                        status.textContent = '';
+                    }, 2000);
+                }
+            }
+
+            fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async generateThumbnail(fileObj) {
+                if (!document.getElementById('generateThumbnails').checked) {
+                    return null;
+                }
+
+                if (!fileObj.type.startsWith('image/')) {
+                    return null;
+                }
+
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        const maxSize = 200;
+                        let { width, height } = img;
+                        
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height = (height * maxSize) / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width = (width * maxSize) / height;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.src = URL.createObjectURL(fileObj.file);
+                });
+            }
+
+            createAndDownloadHTML(embeddedFiles) {
+                // Tworzymy nowy HTML document programowo
+                const newDoc = document.implementation.createHTMLDocument('Embedded Files Viewer');
+                
+                // Konfiguracja
+                const title = document.getElementById('titleInput').value;
+                const includeMetadata = document.getElementById('includeMetadata').checked;
+                const enableDownload = document.getElementById('enableDownload').checked;
+                const layout = document.getElementById('layoutSelect').value;
+
+                // Ustawiamy tytuł
+                newDoc.title = title;
+
+                // Dodajemy viewport meta
+                const viewport = newDoc.createElement('meta');
+                viewport.name = 'viewport';
+                viewport.content = 'width=device-width, initial-scale=1.0';
+                newDoc.head.appendChild(viewport);
+
+                // Dodajemy charset
+                const charset = newDoc.createElement('meta');
+                charset.setAttribute('charset', 'UTF-8');
+                newDoc.head.appendChild(charset);
+
+                // Dodajemy CSS
+                const style = newDoc.createElement('style');
+                style.textContent = this.getViewerCSS(layout);
+                newDoc.head.appendChild(style);
+
+                // Dodajemy zawartość body
+                newDoc.body.innerHTML = this.getViewerHTML(embeddedFiles, title, includeMetadata, enableDownload, layout);
+
+                // Dodajemy dane jako JSON
+                const dataScript = newDoc.createElement('script');
+                dataScript.type = 'application/json';
+                dataScript.id = 'embedded-files-data';
+                dataScript.textContent = JSON.stringify(embeddedFiles);
+                newDoc.body.appendChild(dataScript);
+
+                // Dodajemy JavaScript
+                const jsScript = newDoc.createElement('script');
+                jsScript.textContent = this.getViewerJS(enableDownload, layout);
+                newDoc.body.appendChild(jsScript);
+
+                // Pobieramy pełny HTML
+                const fullHTML = '<!DOCTYPE html>\n' + newDoc.documentElement.outerHTML;
+                
+                // Pobieramy plik
+                this.downloadHTMLFile(fullHTML);
+            }
+
+            getViewerCSS(layout) {
+                return `
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { 
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                        background: #f8fafc; color: #2d3748; line-height: 1.6;
+                    }
+                    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+                    .header { text-align: center; margin-bottom: 40px; }
+                    .header h1 { color: #1a202c; margin-bottom: 10px; }
+                    .header p { color: #718096; }
+                    .files-grid { 
+                        display: grid; 
+                        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+                        gap: 20px; 
+                    }
+                    .files-list { display: flex; flex-direction: column; gap: 15px; }
+                    .files-carousel { position: relative; overflow: hidden; border-radius: 12px; background: white; }
+                    .carousel-container { display: flex; transition: transform 0.3s ease; }
+                    .carousel-slide { min-width: 100%; padding: 30px; }
+                    .carousel-controls { 
+                        position: absolute; top: 50%; transform: translateY(-50%);
+                        background: rgba(255,255,255,0.9); border: none; border-radius: 50%;
+                        width: 40px; height: 40px; cursor: pointer; font-size: 18px;
+                    }
+                    .carousel-prev { left: 15px; }
+                    .carousel-next { right: 15px; }
+                    .carousel-indicators { display: flex; justify-content: center; gap: 8px; padding: 20px; }
+                    .carousel-dot { 
+                        width: 12px; height: 12px; border-radius: 50%; 
+                        background: #cbd5e0; cursor: pointer; transition: all 0.2s;
+                    }
+                    .carousel-dot.active { background: #667eea; transform: scale(1.2); }
+                    .file-card {
+                        background: white; border-radius: 12px; padding: 20px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+                        transition: all 0.3s ease;
+                    }
+                    .file-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+                    .file-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+                    .file-icon { 
+                        width: 48px; height: 48px; border-radius: 8px; 
+                        display: flex; align-items: center; justify-content: center;
+                        font-weight: bold; color: white; font-size: 0.9rem;
+                    }
+                    .file-icon.pdf { background: #e53e3e; }
+                    .file-icon.eml { background: #3182ce; }
+                    .file-icon.jpg, .file-icon.jpeg, .file-icon.png { background: #38a169; }
+                    .file-icon.default { background: #718096; }
+                    .file-title { flex: 1; }
+                    .file-title h3 { margin-bottom: 5px; }
+                    .file-title p { color: #718096; font-size: 0.9rem; }
+                    .file-preview { margin-bottom: 15px; text-align: center; }
+                    .file-preview img { max-width: 100%; height: auto; border-radius: 8px; cursor: pointer; }
+                    .file-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+                    .btn {
+                        padding: 8px 16px; border-radius: 6px; border: none;
+                        cursor: pointer; font-size: 0.9rem; text-decoration: none;
+                        display: inline-flex; align-items: center; gap: 5px;
+                        transition: all 0.2s;
+                    }
+                    .btn-primary { background: #667eea; color: white; }
+                    .btn-primary:hover { background: #5a67d8; }
+                    .btn-secondary { background: #edf2f7; color: #4a5568; }
+                    .btn-secondary:hover { background: #e2e8f0; }
+                    .metadata { 
+                        background: #f7fafc; border-radius: 8px; padding: 15px; 
+                        margin-top: 15px; font-size: 0.85rem; color: #4a5568;
+                        display: none;
+                    }
+                    .metadata-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                    .modal {
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: rgba(0,0,0,0.95); display: flex; align-items: center;
+                        justify-content: center; z-index: 1000; cursor: pointer;
+                    }
+                    .modal-content {
+                        max-width: 95%; max-height: 95%; position: relative;
+                        display: flex; flex-direction: column; align-items: center;
+                    }
+                    .modal img {
+                        max-width: 100%; max-height: 90%; object-fit: contain;
+                        border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                    }
+                    .modal-info {
+                        color: white; text-align: center; margin-top: 15px;
+                        background: rgba(0,0,0,0.8); padding: 10px 20px;
+                        border-radius: 20px; font-size: 14px;
+                    }
+                    .modal-close {
+                        position: absolute; top: 20px; right: 20px;
+                        background: rgba(255,255,255,0.9); border: none;
+                        border-radius: 50%; width: 40px; height: 40px;
+                        font-size: 18px; cursor: pointer; z-index: 1001;
+                    }
+                    @media (max-width: 768px) {
+                        .files-grid { grid-template-columns: 1fr; }
+                        .container { padding: 15px; }
+                        .file-actions { justify-content: center; }
+                    }
+                `;
+            }
+
+            getViewerHTML(embeddedFiles, title, includeMetadata, enableDownload, layout) {
+                let filesHTML = '';
+                
+                if (layout === 'carousel') {
+                    filesHTML = this.getCarouselHTML(embeddedFiles, includeMetadata, enableDownload);
+                } else {
+                    filesHTML = embeddedFiles.map((file, index) => {
+                        return this.getFileCardHTML(file, index, includeMetadata, enableDownload);
+                    }).join('');
+                }
+
+                return `
+                    <div class="container">
+                        <div class="header">
+                            <h1>📁 ${title}</h1>
+                            <p>Samodzielny plik HTML z embedded danymi • ${embeddedFiles.length} plików • Wygenerowano ${new Date().toLocaleDateString('pl-PL')}</p>
+                        </div>
+                        <div class="files-${layout}" id="filesContainer">
+                            ${filesHTML}
+                        </div>
+                    </div>
+                `;
+            }
+
+            getFileCardHTML(file, index, includeMetadata, enableDownload) {
+                const ext = this.getFileExtension(file.name);
+                
+                return `
+                    <div class="file-card" data-file-id="${file.id}">
+                        <div class="file-header">
+                            <div class="file-icon ${ext}">
+                                ${ext.toUpperCase()}
+                            </div>
+                            <div class="file-title">
+                                <h3>${file.name}</h3>
+                                <p>${this.formatFileSize(file.size)} • ${file.type}</p>
+                            </div>
+                        </div>
+                        
+                        ${file.thumbnail ? `
+                            <div class="file-preview">
+                                <img src="${file.thumbnail}" alt="Podgląd ${file.name}" onclick="openFullImage(${file.id})">
+                            </div>
+                        ` : ''}
+                        
+                        <div class="file-actions">
+                            ${enableDownload ? `
+                                <button class="btn btn-primary" onclick="downloadFile(${file.id})">
+                                    💾 Pobierz
+                                </button>
+                            ` : ''}
+                            ${file.type.startsWith('image/') ? `
+                                <button class="btn btn-secondary" onclick="openFullImage(${file.id})">
+                                    🔍 Powiększ
+                                </button>
+                            ` : ''}
+                            ${includeMetadata ? `
+                                <button class="btn btn-secondary" onclick="showInfo(${file.id})">
+                                    ℹ️ Info
+                                </button>
+                            ` : ''}
+                        </div>
+                        
+                        ${includeMetadata ? `
+                            <div class="metadata" id="metadata-${file.id}">
+                                <div class="metadata-row"><strong>Nazwa:</strong> <span>${file.name}</span></div>
+                                <div class="metadata-row"><strong>Rozmiar:</strong> <span>${this.formatFileSize(file.size)}</span></div>
+                                <div class="metadata-row"><strong>Typ:</strong> <span>${file.type}</span></div>
+                                <div class="metadata-row"><strong>Modyfikacja:</strong> <span>${new Date(file.lastModified).toLocaleString('pl-PL')}</span></div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            getCarouselHTML(embeddedFiles, includeMetadata, enableDownload) {
+                if (embeddedFiles.length === 0) return '';
+                
+                const slides = embeddedFiles.map((file, index) => `
+                    <div class="carousel-slide">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2>${file.name}</h2>
+                            <p>${this.formatFileSize(file.size)} • ${file.type}</p>
+                        </div>
+                        
+                        ${file.thumbnail ? `
+                            <div class="file-preview">
+                                <img src="${file.thumbnail}" alt="Podgląd ${file.name}" onclick="openFullImage(${file.id})" style="max-height: 400px;">
+                            </div>
+                        ` : `
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div class="file-icon ${this.getFileExtension(file.name)}" style="width: 80px; height: 80px; font-size: 1.5rem; margin: 0 auto;">
+                                    ${this.getFileExtension(file.name).toUpperCase()}
+                                </div>
+                            </div>
+                        `}
+                        
+                        <div class="file-actions" style="justify-content: center;">
+                            ${enableDownload ? `
+                                <button class="btn btn-primary" onclick="downloadFile(${file.id})">
+                                    💾 Pobierz
+                                </button>
+                            ` : ''}
+                            ${file.type.startsWith('image/') ? `
+                                <button class="btn btn-secondary" onclick="openFullImage(${file.id})">
+                                    🔍 Powiększ
+                                </button>
+                            ` : ''}
+                            ${includeMetadata ? `
+                                <button class="btn btn-secondary" onclick="showInfo(${file.id})">
+                                    ℹ️ Info
+                                </button>
+                            ` : ''}
+                        </div>
+                        
+                        ${includeMetadata ? `
+                            <div class="metadata" id="metadata-${file.id}" style="display: block; margin-top: 20px;">
+                                <div class="metadata-row"><strong>Nazwa:</strong> <span>${file.name}</span></div>
+                                <div class="metadata-row"><strong>Rozmiar:</strong> <span>${this.formatFileSize(file.size)}</span></div>
+                                <div class="metadata-row"><strong>Typ:</strong> <span>${file.type}</span></div>
+                                <div class="metadata-row"><strong>Pozycja:</strong> <span>${index + 1} z ${embeddedFiles.length}</span></div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                const controls = embeddedFiles.length > 1 ? `
+                    <button class="carousel-controls carousel-prev" onclick="carousel.prev()">‹</button>
+                    <button class="carousel-controls carousel-next" onclick="carousel.next()">›</button>
+                    <div class="carousel-indicators">
+                        ${embeddedFiles.map((_, index) => `
+                            <div class="carousel-dot ${index === 0 ? 'active' : ''}" onclick="carousel.goTo(${index})"></div>
+                        `).join('')}
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="carousel-container" id="carouselContainer">
+                        ${slides}
+                    </div>
+                    ${controls}
+                `;
+            }
+
+            getViewerJS(enableDownload, layout) {
+                return `
+                    // Załaduj dane
+                    var filesData = JSON.parse(document.getElementById('embedded-files-data').textContent);
+                    
+                    // Karuzela
+                    var carousel = {
+                        currentSlide: 0,
+                        totalSlides: filesData.length,
+                        
+                        updateDisplay: function() {
+                            var container = document.getElementById('carouselContainer');
+                            if (!container) return;
+                            
+                            container.style.transform = 'translateX(-' + (this.currentSlide * 100) + '%)';
+                            
+                            var dots = document.querySelectorAll('.carousel-dot');
+                            for (var i = 0; i < dots.length; i++) {
+                                if (i === this.currentSlide) {
+                                    dots[i].classList.add('active');
+                                } else {
+                                    dots[i].classList.remove('active');
+                                }
+                            }
+                        },
+                        
+                        next: function() {
+                            this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                            this.updateDisplay();
+                        },
+                        
+                        prev: function() {
+                            this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                            this.updateDisplay();
+                        },
+                        
+                        goTo: function(index) {
+                            this.currentSlide = index;
+                            this.updateDisplay();
+                        }
+                    };
+                    
+                    // Nawigacja klawiaturą
+                    document.addEventListener('keydown', function(e) {
+                        if (document.querySelector('.files-carousel')) {
+                            if (e.key === 'ArrowLeft') carousel.prev();
+                            if (e.key === 'ArrowRight') carousel.next();
+                        }
+                    });
+                    
+                    // Funkcje
+                    function downloadFile(fileId) {
+                        var file = null;
+                        for (var i = 0; i < filesData.length; i++) {
+                            if (filesData[i].id === fileId) {
+                                file = filesData[i];
+                                break;
+                            }
+                        }
+                        if (!file) return;
+                        
+                        var link = document.createElement('a');
+                        link.href = file.data;
+                        link.download = file.name;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    
+                    function openFullImage(fileId) {
+                        var file = null;
+                        for (var i = 0; i < filesData.length; i++) {
+                            if (filesData[i].id === fileId) {
+                                file = filesData[i];
+                                break;
+                            }
+                        }
+                        if (!file || !file.type.startsWith('image/')) return;
+                        
+                        var modal = document.createElement('div');
+                        modal.className = 'modal';
+                        
+                        var content = document.createElement('div');
+                        content.className = 'modal-content';
+                        
+                        var img = document.createElement('img');
+                        img.src = file.data;
+                        
+                        var info = document.createElement('div');
+                        info.className = 'modal-info';
+                        info.textContent = file.name + ' • ' + formatFileSize(file.size);
+                        
+                        var closeBtn = document.createElement('button');
+                        closeBtn.className = 'modal-close';
+                        closeBtn.innerHTML = '✕';
+                        closeBtn.onclick = function() {
+                            document.body.removeChild(modal);
+                        };
+                        
+                        content.appendChild(img);
+                        content.appendChild(info);
+                        modal.appendChild(content);
+                        modal.appendChild(closeBtn);
+                        
+                        modal.onclick = function(e) {
+                            if (e.target === modal) {
+                                document.body.removeChild(modal);
+                            }
+                        };
+                        
+                        document.body.appendChild(modal);
+                    }
+                    
+                    function showInfo(fileId) {
+                        var metadata = document.getElementById('metadata-' + fileId);
+                        if (!metadata) return;
+                        
+                        if (metadata.style.display === 'none' || metadata.style.display === '') {
+                            metadata.style.display = 'block';
+                        } else {
+                            metadata.style.display = 'none';
+                        }
+                    }
+                    
+                    function formatFileSize(bytes) {
+                        if (bytes === 0) return '0 B';
+                        var k = 1024;
+                        var sizes = ['B', 'KB', 'MB', 'GB'];
+                        var i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                    }
+                    
+                    // Inicjalizacja
+                    console.log('📁 Embedded Files Viewer loaded');
+                    console.log('📊 Files: ' + filesData.length);
+                `;
+            }
+
+            downloadHTMLFile(htmlContent) {
+                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                link.href = url;
+                link.download = `embedded-files-${timestamp}.html`;
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Inicjalizacja
+        const embedder = new FileEmbedder();
+    </script>
+</body>
+</html>
