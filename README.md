@@ -24,6 +24,29 @@ Potrzeba matką wynalazków, a potrzebą jest tutaj możliwosć prezentacji na d
 Ten kto rozumie czym jest internet i dlaczego nie gasną zlecenia na skrapery, ten wie, że narzędzie do skrapowania w czasie rzeczywistym zasobów lokalnej sieci do formatu np. tabeli z listą faktur z podsumowaniem miesięcznych obrotów jest zwyczajną rutyną, która teraz jest możliwa, dzięki koncepcji i praktycznemu wdrożeniu PWA-SVG z Data URI
 
 
++ ale co to ma wspólnego z LLM?
+
+gdy przetwarzasz dane w plikach, to z reguły zapisujesz je w centralnej bazie danych, do której dostęp masz przez API, a to komplikuje w dobie MCP dostęp do zasobów, które chcesz przetwarzać dalej, przykładowa sytuacja:
+chcesz zrobić raport miesięczny wydatków, masz paragony, faktury, itd, każdy w innym formacie pliku i układzie wewnątrz, więc korzystasz z kilku usług, każda z nich robi co innego na koniec zbierasz dane razem w tabelę i robisz za pomocą jakiegoś procesora dodatkowe operacje typu obliczenie miesięcznych kosztów, zysków, itd, a potem zestawiasz to z innymi danymi w systemie lub wysyłasz do księgowego, itd.
+Wszystkie te operacje wykonują różne programy, więc w zasadzie trzeba by zrobić złożoną architekturę i w niej współdzielić metadane, ale można po prostu zostawić dane u źródła, w pliku i je pobierać na żądanie, gdy potrzebne jest np wygenerowanie bilansu z linkowaniem źródła, by zawsze można było sprawdzić.
+
+W przypadku pdf, png, jpg, itd są ograniczenia, nie można przechowywać dowolnej ilości danych, limit w SVG zależny jest od środowiska, gdzie dla PWA to ok 500MB.
+Tutaj dochodzimy do sytuacji w której możemy bazując na rozproszonym oprogramowaniu przetwarzać rozproszone (meta)dane, coś co w dobie mikrousług było przekleństwem, gdyż własnie występowały rózne kontekstowe problemy z uwagi na tworzenia metadanych do metadanych, tutaj działamy na samym źródle i tylko ono jest punktem odniesienia, stąd takie podejście minimaliuje problemy z konsystencą danych. 
+
+Więc od początku, veridock ma w sobie wyszukiwarkę plików np PDF, JPG, SVG, konwerter różnych plików, np 
+Szukamy pliki PDF na komputerze
+konwertujemy PDF do SVG - czyli ładujemy plik PDF do kontenera SVG, tak jak do html z dodatkowymi metadanymi
+Uruchamiamy kolejne OCRy, które skanują pliki SVG zawierające coś co OCR może przetworzyć na metadane w JSON/XML/CSV
+Uruchamiamy wyszukiwarkę metadanych ze wskazanym oczekiwaniem co do wynikowego formatu, np tabela
+Pobieramy inne pliki np CSV do SVG i generujemy z automatycznym podglądem tych danych bezpośrednio w SVG?!
+
+Innymi słowy, wzbogacamy poprzez użycie jednego formatu do wszystkich plików, które chcemy posiadać w kolekcji z ich pierwotną wersją, czyli PDF jest w całości w SVG tak jak JPG, itd, możemy też nie włączać  pierwotnego pliku a wskazać na źródło url http://
+Jednak podstawowa rola to konwersja, czyli usunięcie pliku źródłowego i włączenie go w całosci jako DATA URI do nowego pliku kontenera SVG, wówczas as default używamy formatu faktura.pdf.svg
+Jeśli faktura ma więcej stron to od razu to widać na ikonie/w powiekszeniu, wiec to jest zupełnie inne podejście, bardziej transaprentne, które pozwala na łatwiejszą pracę z danymi, bez potrzeby używania wielu różnych formatów plików.
+
+To rozwiązanie pierwotnie miało służyć dla przechowywania szyfrowanych danych w jednoplikowym kontenerze oraz do przetwarzania danych z archiwów CCTV np. mp4-to-text, gdzie zawartość pliku z metadanymi  ograniczała by się do raportu, scenariusza zdarzeń, z linkowaniem do źródła w archiwum
+
+
 
 # [docs.docutemp.com](http://docs.docutemp.com)
 
