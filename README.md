@@ -14,7 +14,8 @@
 
 ## CO to jest
 
-Projekt veriDOCK to kompleksowy ekosystem konwertujący i przetwarzający pliki i metadane od pojedynczego pliku po kolekcje plików w kontenerze z plikami. Rozwiązanie dla rozproszonych metadanych: połączenie generatora -> konwertera -> procesora -> wyszukiwarki danych niczym internet usług w jednym...
+Projekt veriDOCK to kompleksowy ekosystem konwertujący i przetwarzający pliki i metadane od pojedynczego pliku po kolekcje plików w kontenerze SVG?!
+Rozwiązanie dla rozproszonych metadanych: połączenie generatora -> konwertera -> procesora -> wyszukiwarki danych niczym internet usług w jednym...
 
 ## Tło powstania
 
