@@ -20,7 +20,7 @@ Rozwiązanie dla rozproszonych metadanych: połączenie generatora -> konwertera
 ## Tło powstania
 
 Wykonałem 2 badania, na perplexity i na Claude i nie znalazłem drugiego takiego rozwiązania, który by w ogóle śmiało pomyśleć, że SVG może służyć do czegoś więcej niż obraz i animacja wektorowa.
-Potrzeba matką wynalazków, a potrzebą jest teutaj możliwosć prezentacji na dowolnym systemie zawartości pliku poprzez preview na każdym systemie, a dodatkowo możliwośc p oprostu łatwej dystrybucji takich rozproszonych metadanych, które teraz są jednoplikową bazą danych na temat załączników, które wchodzą w skład pliku SVG, czyli reasumując SVG może służyć jako kontener na HTML z Data URI jako kontenerem dowolnych plików i realizować zadania jak aplikacje PWA.
+Potrzeba matką wynalazków, a potrzebą jest tutaj możliwosć prezentacji na dowolnym systemie zawartości pliku poprzez preview na liście plików manadżera, a dodatkowo możliwośc p oprostu łatwej dystrybucji takich rozproszonych metadanych, które teraz są jednoplikową bazą danych na temat załączników, które wchodzą w skład pliku SVG, czyli reasumując SVG może służyć jako kontener na HTML z Data URI jako kontenerem dowolnych plików i realizować zadania jak aplikacje PWA.
 Ten kto rozumie czym jest internet i dlaczego nie gasną zlecenia na skrapery, ten wie, że narzędzie do skrapowania w czasie rzeczywistym zasobów lokalnej sieci do formatu np. tabeli z listą faktur z podsumowaniem miesięcznych obrotów jest zwyczajną rutyną, która teraz jest możliwa, dzięki koncepcji i praktycznemu wdrożeniu PWA-SVG z Data URI
 
 
